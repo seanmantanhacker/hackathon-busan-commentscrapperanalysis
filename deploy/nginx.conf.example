@@ -1,0 +1,38 @@
+# Reverse proxy for the SNS Listening dashboard (web/server.py, stdlib
+# http.server bound to 127.0.0.1:3333 via pm2 - see deploy/ecosystem.config.js).
+#
+# Install:
+#   sudo cp deploy/nginx.conf.example /etc/nginx/sites-available/sns-listening
+#   sudo ln -s /etc/nginx/sites-available/sns-listening /etc/nginx/sites-enabled/
+#   sudo nginx -t && sudo systemctl reload nginx
+#
+# Then for HTTPS: sudo certbot --nginx -d yourdomain.com -d www.yourdomain.com
+# (certbot rewrites this file to add the SSL server block - run it after this
+# plain-HTTP version is confirmed working, not before.)
+
+# The app itself has NO login - anyone who can reach it can start runs
+# (spending your YouTube/Gemini quota) and read every generated report. On
+# localhost or a LAN that's an accepted tradeoff; on a public domain it is
+# not. Put it behind HTTP Basic Auth unless you have another plan for this:
+#
+#   sudo apt install apache2-utils
+#   sudo htpasswd -c /etc/nginx/.htpasswd yourusername
+#   # then uncomment the two auth_basic lines below
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name yourdomain.com www.yourdomain.com;  # <-- replace with your actual domain
+
+    location / {
+        # auth_basic "SNS Listening";
+        # auth_basic_user_file /etc/nginx/.htpasswd;
+
+        proxy_pass http://127.0.0.1:3333;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

@@ -5,5 +5,6 @@ requests>=2.28.0
 # Korean translation shown under sample quotes. Skipped gracefully if absent.
 deep-translator>=1.11.4
 
-# Optional — only for `--analyzer llm` (Gemini-assisted analysis).
-# google-genai
+# Optional — only for `--analyzer llm` (Gemini-assisted analysis). The rules
+# analyzer still works fine without it; install this if you actually run --analyzer llm.
+google-genai>=1.0.0

@@ -61,7 +61,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--analyzer",
         choices=("rules", "llm"),
         default="rules",
-        help="rules = deterministic lexicon baseline; llm = Claude-assisted (needs ANTHROPIC_API_KEY).",
+        help="rules = deterministic lexicon baseline; llm = Gemini-assisted (needs GEMINI_API_KEY).",
     )
     parser.add_argument("--no-cache", action="store_true", help="Bypass the local API response cache.")
     parser.add_argument(

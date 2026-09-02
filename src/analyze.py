@@ -6,7 +6,7 @@ The baseline analyzer is rules + lexicon based on purpose:
   - every number can be traced back to a matched term when a mentor asks "why".
 
 `llm_analyze.py` provides an optional upgrade path that swaps this out for
-Claude while keeping the same output shape.
+Gemini while keeping the same output shape.
 """
 
 from __future__ import annotations
@@ -267,5 +267,9 @@ class RulesAnalyzer:
             published_at=getattr(comment, "published_at", ""),
         )
 
-    def analyze(self, comments: Sequence[Any], results: Sequence[Any]) -> List[CommentAnalysis]:
+    def analyze(
+        self, comments: Sequence[Any], results: Sequence[Any], *, on_batch: Any = None
+    ) -> List[CommentAnalysis]:
+        # on_batch is accepted for interface parity with LLMAnalyzer (see
+        # llm_analyze.py) - this analyzer is fast enough to not need it.
         return [self.analyze_one(c, r) for c, r in zip(comments, results)]

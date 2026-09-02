@@ -5,6 +5,5 @@ requests>=2.28.0
 # Korean translation shown under sample quotes. Skipped gracefully if absent.
 deep-translator>=1.11.4
 
-# Optional — only for `--analyzer llm` (Claude-assisted analysis).
-# Needs ANTHROPIC_API_KEY and is a paid API; unrelated to translation now.
-# anthropic>=0.40.0
+# Optional — only for `--analyzer llm` (Gemini-assisted analysis).
+# google-genai

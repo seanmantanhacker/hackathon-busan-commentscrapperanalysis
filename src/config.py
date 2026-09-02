@@ -81,10 +81,39 @@ def get_threads_token() -> str | None:
     return os.environ.get("THREADS_ACCESS_TOKEN") or None
 
 
-def get_anthropic_key() -> str | None:
+DEFAULT_GEMINI_MODELS = [
+    "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
+    "gemini-3-flash",
+    "gemini-3.1-flash-lite",
+    "gemini-3.5-flash",
+    "gemini-3.5-flash-lite",
+    "gemini-3.6-flash",
+    "gemini-3.7-flash",
+]
+
+
+def get_gemini_key() -> str | None:
     """Optional - only needed for the `--analyzer llm` upgrade path."""
     load_dotenv()
-    return os.environ.get("ANTHROPIC_API_KEY") or None
+    return os.environ.get("GEMINI_API_KEY") or None
+
+
+def get_gemini_models() -> list[str]:
+    """Models to rotate through for `--analyzer llm`, batch by batch.
+
+    Override with a comma-separated GEMINI_MODELS env var. Rotating spreads
+    calls across each model's separate free-tier quota; llm_analyze.py falls
+    back to the next model in the list if one fails, so an invalid/retired
+    name here just gets skipped rather than breaking the run.
+    """
+    load_dotenv()
+    raw = os.environ.get("GEMINI_MODELS")
+    if raw:
+        models = [m.strip() for m in raw.split(",") if m.strip()]
+        if models:
+            return models
+    return list(DEFAULT_GEMINI_MODELS)
 
 
 def ensure_dirs() -> None:

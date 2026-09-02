@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Zorvex SNS Listening — Presentation</title>
+<link rel="stylesheet" href="/static/styles.css"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍅</text></svg>"/>
+<style>
+  /* Bigger and calmer than the working dashboard — this is read from a few
+     meters away, not clicked through at a desk. */
+  .present-main { max-width: 980px; margin: 0 auto; padding: 24px 20px 60px; }
+  .present-main .panel__title { font-size: 19px; }
+  .present-main .tile__value { font-size: 30px; }
+  .present-main .tile__label { font-size: 13px; }
+  .present-main .card__name { font-size: 16px; }
+  .present-main .rec__name { font-size: 17px; }
+  .present-main .quote { font-size: 14px; }
+</style>
+</head>
+<body class="viz-root">
+
+<header class="masthead">
+  <div class="masthead__title">
+    <h1>Zorvex SNS Listening</h1>
+    <p>HANGOOD Stevia Tomato · social listening for the Indonesian market</p>
+  </div>
+  <div class="masthead__right">
+    <select id="reportPicker" class="select--small" title="Load a previous run"></select>
+    <a href="/" class="btn btn--ghost" title="Open the full working dashboard">Full dashboard ↗</a>
+    <button id="themeToggle" class="btn btn--ghost" type="button" title="Toggle light/dark">◐</button>
+  </div>
+</header>
+
+<main class="layout present-main">
+
+  <section id="emptyState" class="panel panel--empty">
+    <p class="empty__icon">🍅</p>
+    <h2 class="panel__title">No analysis yet</h2>
+    <p class="muted">Run an analysis from the <a href="/">full dashboard</a> first, then come back here to present it.</p>
+  </section>
+
+  <div id="results" hidden>
+
+    <section class="panel" aria-labelledby="statsHeading">
+      <h2 id="statsHeading" class="panel__title">Overview</h2>
+      <div id="statTiles" class="tiles"></div>
+      <p id="runMeta" class="muted small"></p>
+    </section>
+
+    <section class="panel" aria-labelledby="segHeading">
+      <h2 id="segHeading" class="panel__title">Customer segments</h2>
+      <p class="muted small">Seeded from Zorvex's stated targets — real conversation behind each one.</p>
+      <div id="segmentCards" class="cards"></div>
+    </section>
+
+    <section class="panel" aria-labelledby="recHeading">
+      <h2 id="recHeading" class="panel__title">Marketing recommendations</h2>
+      <p class="muted small">Ranked by qualified leads, not raw segment size.</p>
+      <div id="recommendations" class="reclist"></div>
+    </section>
+
+  </div>
+
+</main>
+
+<footer class="foot">
+  Zorvex SNS Listening · Team SISKAMLING · I'M IN BUSAN Impact Hackathon 2026
+</footer>
+
+<script src="/static/common.js"></script>
+<script src="/static/present.js"></script>
+</body>
+</html>

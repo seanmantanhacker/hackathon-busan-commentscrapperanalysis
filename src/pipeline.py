@@ -71,9 +71,9 @@ class Pipeline:
                 return LLMAnalyzer(self.taxonomy, self.lexicon)
             except Exception as exc:  # noqa: BLE001 - fall back rather than fail the run
                 # Surfaced at the top of run() so the dashboard shows it too —
-                # a silent downgrade from Claude to rules would be misleading.
+                # a silent downgrade from Gemini to rules would be misleading.
                 self.analyzer_warning = (
-                    f"  ! Claude-assisted analyzer unavailable ({exc}) — using the rules analyzer instead."
+                    f"  ! Gemini-assisted analyzer unavailable ({exc}) — using the rules analyzer instead."
                 )
         return RulesAnalyzer(self.taxonomy, self.lexicon)
 
@@ -258,7 +258,15 @@ class Pipeline:
             )
 
         self._emit(70, f"[3/5] Analyzing with the '{self.analyzer.name}' analyzer...")
-        analyses = self.analyzer.analyze(outcome.comments, outcome.results)
+
+        def on_batch(done: int, total: int) -> None:
+            # The LLM analyzer can take many batches on a big live run - each one
+            # is a real network call, easily minutes in total. Without this a
+            # long run just sits frozen at "[3/5] Analyzing..." and looks stuck.
+            percent = 70 + int(14 * done / max(1, total))
+            self._emit(percent, f"      batch {done}/{total}...")
+
+        analyses = self.analyzer.analyze(outcome.comments, outcome.results, on_batch=on_batch)
         stats = overall_stats(analyses)
         self._log(
             f"      sentiment {stats['avg_sentiment']:+.3f} | "

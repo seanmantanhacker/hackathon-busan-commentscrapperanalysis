@@ -293,7 +293,7 @@ python run.py [options]
   --comments-per-video N        comments per video (default 100)
   --threshold F                 relevance cutoff; lower = wider net (default 1.0)
   --min-segment-size N          hide segments smaller than this (default 1)
-  --analyzer {rules,llm}        rules = deterministic lexicon; llm = Claude-assisted
+  --analyzer {rules,llm}        rules = deterministic lexicon; llm = Gemini-assisted
   --no-cache                    bypass the local API response cache
   --pdf                         also export the report as PDF
   --tag NAME                    output filename tag (default: UTC timestamp)
@@ -322,11 +322,14 @@ re-running the same queries during development costs zero additional quota. Use
 number traces back to a matched term when a mentor asks "why did you score it that
 way?" This is the baseline, and it is what the demo should run on.
 
-**`--analyzer llm`** — sends comment batches to Claude for sentiment, topic, intent,
+**`--analyzer llm`** — sends comment batches to Gemini for sentiment, topic, intent,
 and segment judgment, which catches sarcasm and slang a lexicon misses. Needs
-`pip install anthropic` and `ANTHROPIC_API_KEY`. It produces the identical output
-shape, so everything downstream is unchanged, and any failed batch falls back to the
-rules result rather than aborting the run.
+`pip install google-genai` and `GEMINI_API_KEY`. Calls rotate through a list of
+Gemini models (`GEMINI_MODELS` in `.env`, comma-separated) batch by batch, failing
+over to the next model on error — this spreads load across each model's separate
+free-tier quota. It produces the identical output shape, so everything downstream
+is unchanged, and any failed batch (all models exhausted) falls back to the rules
+result rather than aborting the run.
 
 ---
 
@@ -374,7 +377,7 @@ hackathon-busan-commentscrapperanalysis/
 │   ├── threads_client.py        Threads keyword search (limited; see caveats)
 │   ├── relevance.py             relevance scoring and noise filtering
 │   ├── analyze.py               sentiment, topics, intent, lead grading
-│   ├── llm_analyze.py           optional Claude-assisted analyzer
+│   ├── llm_analyze.py           optional Gemini-assisted analyzer
 │   ├── segments.py              aggregate comments into segment profiles
 │   ├── recommend.py             segment → channel / angle / content
 │   ├── report.py                markdown + JSON + CSV writers

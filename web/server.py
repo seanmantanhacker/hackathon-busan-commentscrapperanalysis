@@ -6,6 +6,7 @@ pipeline run, stream its progress, and render the results.
 Routes
 ------
   GET  /                      the dashboard page
+  GET  /present               panel-facing summary view (stats, segments, recommendations only)
   GET  /static/<file>         css / js
   POST /api/run               start a run (JSON body = pipeline options)
   GET  /api/progress          current job state + log lines (polled)
@@ -238,6 +239,10 @@ class Handler(BaseHTTPRequestHandler):
             self._file(STATIC_DIR / "index.html")
             return
 
+        if route == "/present":
+            self._file(STATIC_DIR / "present.html")
+            return
+
         if route.startswith("/static/"):
             name = unquote(route[len("/static/"):])
             # Resolve and confirm containment - no path traversal out of static/.
@@ -249,12 +254,12 @@ class Handler(BaseHTTPRequestHandler):
             return
 
         if route == "/api/config":
-            from src.config import get_anthropic_key
+            from src.config import get_gemini_key
             from src.pdf_export import find_browser
             from src.translate import translation_available
 
             try:
-                import anthropic  # noqa: F401
+                from google import genai  # noqa: F401
 
                 has_sdk = True
             except ImportError:
@@ -266,11 +271,11 @@ class Handler(BaseHTTPRequestHandler):
                 "has_reddit": bool(reddit_id and reddit_secret),
                 "has_threads": bool(get_threads_token()),
                 "pdf_available": bool(find_browser()),
-                "llm_available": has_sdk and bool(get_anthropic_key()),
+                "llm_available": has_sdk and bool(get_gemini_key()),
                 "llm_blocker": (
-                    None if has_sdk and get_anthropic_key()
-                    else "needs `pip install anthropic`" if not has_sdk
-                    else "needs ANTHROPIC_API_KEY in .env"
+                    None if has_sdk and get_gemini_key()
+                    else "needs `pip install google-genai`" if not has_sdk
+                    else "needs GEMINI_API_KEY in .env"
                 ),
                 "translation_available": translation_available(),
                 "output_dir": str(OUTPUT_DIR),

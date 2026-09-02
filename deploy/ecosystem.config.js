@@ -12,8 +12,8 @@ module.exports = {
     {
       name: "sns-listening",
       script: "serve.py",
-      interpreter: "/var/www/sns-listening/venv/bin/python3",
-      cwd: "/var/www/sns-listening",
+      interpreter: "/var/www/hackathon-busan-commentscrapperanalysis/venv/bin/python3",
+      cwd: "/var/www/hackathon-busan-commentscrapperanalysis",
       args: "--no-browser --port 3333",
       env: {
         PYTHONUNBUFFERED: "1",

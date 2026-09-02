@@ -14,6 +14,7 @@
     sources: $("sources"), maxQueries: $("maxQueries"), videosPerQuery: $("videosPerQuery"),
     commentsPerVideo: $("commentsPerVideo"), threshold: $("threshold"), analyzer: $("analyzer"),
     wantPdf: $("wantPdf"), useCache: $("useCache"), runBtn: $("runBtn"),
+    runPasswordField: $("runPasswordField"), runPassword: $("runPassword"),
     keyBadge: $("keyBadge"), quotaHint: $("quotaHint"), themeToggle: $("themeToggle"),
     progressWrap: $("progressWrap"), progressMsg: $("progressMsg"), progressPct: $("progressPct"),
     progressBar: $("progressBar"), progressBarEl: $("progressBarEl"), progressLog: $("progressLog"),
@@ -283,6 +284,7 @@
       analyzer: el.analyzer.value,
       use_cache: el.useCache.checked,
       pdf: el.wantPdf.checked,
+      password: el.runPassword.value,
     };
 
     let payload;
@@ -300,6 +302,12 @@
       el.runError.textContent = error.message;
       el.runError.hidden = false;
       return;
+    }
+    // Correct password confirmed by the server accepting the run - remember it
+    // for next time. Convenience only, not a security boundary: the server
+    // re-checks it on every request regardless.
+    if (!el.runPasswordField.hidden) {
+      try { localStorage.setItem("sns-run-password", el.runPassword.value); } catch { /* private mode */ }
     }
     startPolling(payload.tag);
   }
@@ -393,6 +401,12 @@
       const segNote = $("segTranslationNote"), recNote = $("recTranslationNote");
       if (segNote) segNote.textContent = note;
       if (recNote) recNote.textContent = note;
+    }
+    if (serverConfig.requires_run_password) {
+      el.runPasswordField.hidden = false;
+      try {
+        el.runPassword.value = localStorage.getItem("sns-run-password") || "";
+      } catch { /* private mode */ }
     }
 
     syncSourceFields();

@@ -116,6 +116,18 @@ def get_gemini_models() -> list[str]:
     return list(DEFAULT_GEMINI_MODELS)
 
 
+def get_run_password() -> str | None:
+    """Optional shared password gating POST /api/run (starting an analysis).
+
+    Unset by default so local dev / tests need nothing extra. Set RUN_PASSWORD
+    once this is deployed somewhere public - the dashboard has no other login,
+    so without this anyone who finds the URL can start runs and spend your
+    YouTube/Gemini quota.
+    """
+    load_dotenv()
+    return os.environ.get("RUN_PASSWORD") or None
+
+
 def ensure_dirs() -> None:
     for directory in (RAW_DIR, CACHE_DIR, OUTPUT_DIR, FIXTURE_DIR):
         directory.mkdir(parents=True, exist_ok=True)

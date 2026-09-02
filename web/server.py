@@ -19,6 +19,7 @@ Routes
 
 from __future__ import annotations
 
+import hmac
 import json
 import mimetypes
 import threading
@@ -37,6 +38,7 @@ from src.config import (  # noqa: E402
     OUTPUT_DIR,
     get_api_key,
     get_reddit_credentials,
+    get_run_password,
     get_threads_token,
     load_sources_catalog,
 )
@@ -278,6 +280,7 @@ class Handler(BaseHTTPRequestHandler):
                     else "needs GEMINI_API_KEY in .env"
                 ),
                 "translation_available": translation_available(),
+                "requires_run_password": bool(get_run_password()),
                 "output_dir": str(OUTPUT_DIR),
             })
             return
@@ -343,6 +346,13 @@ class Handler(BaseHTTPRequestHandler):
             options = json.loads(self.rfile.read(length) or b"{}")
         except (ValueError, json.JSONDecodeError) as exc:
             self._error(400, f"Bad request body: {exc}")
+            return
+
+        required_password = get_run_password()
+        if required_password and not hmac.compare_digest(
+            str(options.get("password") or ""), required_password
+        ):
+            self._error(401, "Incorrect password.")
             return
 
         requested = options.get("sources") or [options.get("source", "fixtures")]

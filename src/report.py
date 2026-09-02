@@ -175,11 +175,14 @@ def build_markdown(
                 # the difference between a claim and evidence at a pitch.
                 link = f" · [open ↗]({quote['permalink']})" if quote.get("permalink") else ""
                 source = f" · _{quote['source']}_" if quote.get("source") else ""
+                translation = (
+                    f"  <br/>  ↳ *translated (KO): {quote['text_ko']}*" if quote.get("text_ko") else ""
+                )
                 add(
                     f"- {marker} \"{quote['text']}\"  "
                     f"<br/>  ↳ `{quote.get('platform', '')}` · grade **{quote['lead_grade']}** "
                     f"({quote['lead_score']}) · intent `{quote['intent']}` · {quote['likes']} likes"
-                    f"{source}{link}"
+                    f"{source}{link}{translation}"
                 )
             add("")
 
@@ -206,6 +209,8 @@ def build_markdown(
         if rec.evidence_quote:
             link = f" [open ↗]({rec.evidence_permalink})" if rec.evidence_permalink else ""
             add(f"> Evidence: \"{truncate(rec.evidence_quote, 160)}\"{link}")
+            if rec.evidence_quote_ko:
+                add(f"> *translated (KO): {truncate(rec.evidence_quote_ko, 160)}*")
             add("")
 
     # -------------------------------------------------------------- notes

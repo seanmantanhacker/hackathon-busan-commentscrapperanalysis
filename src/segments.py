@@ -67,6 +67,7 @@ def _pick_quotes(rows: Sequence[Any], limit: int = 3) -> List[Dict[str, Any]]:
     return [
         {
             "text": truncate(r.text, 200),
+            "text_ko": None,  # filled in by _attach_translations, if available
             "sentiment": r.sentiment_label,
             "sentiment_score": r.sentiment_score,
             "intent": r.intent,
@@ -79,6 +80,23 @@ def _pick_quotes(rows: Sequence[Any], limit: int = 3) -> List[Dict[str, Any]]:
         }
         for r in chosen[:limit]
     ]
+
+
+def _attach_translations(profiles: Sequence[SegmentProfile]) -> None:
+    """Best-effort Korean translation of every sample quote, in one batch.
+
+    One call across all segments (rather than one per segment) keeps this to
+    a couple of API round trips per run. Silently a no-op if translation is
+    unavailable (see `translate.translate_to_korean`).
+    """
+    quotes = [q for profile in profiles for q in profile.sample_quotes]
+    if not quotes:
+        return
+    from .translate import translate_to_korean
+
+    translations = translate_to_korean([q["text"] for q in quotes])
+    for quote, translation in zip(quotes, translations):
+        quote["text_ko"] = translation
 
 
 def build_segments(
@@ -152,6 +170,7 @@ def build_segments(
         )
 
     profiles.sort(key=lambda p: (p.qualified_leads, p.size), reverse=True)
+    _attach_translations(profiles)
     return profiles
 
 

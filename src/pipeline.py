@@ -24,6 +24,7 @@ from .recommend import build_recommendations, strategic_notes
 from .relevance import RelevanceScorer
 from .segments import build_segments, overall_stats
 from .comment import Comment
+from .translate import translation_available
 from .youtube_client import YouTubeClient, load_fixture_comments
 
 
@@ -265,6 +266,8 @@ class Pipeline:
         )
 
         self._emit(85, "[4/5] Building customer segments...")
+        if not translation_available():
+            self._log("      ! `pip install deep-translator` for Korean-translated sample quotes.")
         profiles = build_segments(analyses, self.taxonomy, min_size=self.config.min_segment_size)
         for profile in profiles:
             self._log(

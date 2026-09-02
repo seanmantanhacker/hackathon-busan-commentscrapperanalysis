@@ -251,6 +251,7 @@ class Handler(BaseHTTPRequestHandler):
         if route == "/api/config":
             from src.config import get_anthropic_key
             from src.pdf_export import find_browser
+            from src.translate import translation_available
 
             try:
                 import anthropic  # noqa: F401
@@ -271,6 +272,7 @@ class Handler(BaseHTTPRequestHandler):
                     else "needs `pip install anthropic`" if not has_sdk
                     else "needs ANTHROPIC_API_KEY in .env"
                 ),
+                "translation_available": translation_available(),
                 "output_dir": str(OUTPUT_DIR),
             })
             return

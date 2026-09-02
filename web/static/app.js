@@ -16,7 +16,8 @@
     progressWrap: $("progressWrap"), progressMsg: $("progressMsg"), progressPct: $("progressPct"),
     progressBar: $("progressBar"), progressBarEl: $("progressBarEl"), progressLog: $("progressLog"),
     runError: $("runError"),
-    results: $("results"), emptyState: $("emptyState"),
+    resultsPage1: $("resultsPage1"), resultsPage2: $("resultsPage2"), emptyState: $("emptyState"),
+    tabRun: $("tabRun"), tabDetails: $("tabDetails"), pageRun: $("page-run"), pageDetails: $("page-details"),
     statTiles: $("statTiles"), runMeta: $("runMeta"), downloads: $("downloads"),
     glossary: $("glossary"),
     sourceTable: $("sourceTable"), nextBuilds: $("nextBuilds"),
@@ -228,9 +229,13 @@
           ? ` · <a class="quote__link" href="${esc(q.permalink)}" target="_blank" rel="noopener noreferrer">open ↗</a>`
           : "";
         const src = q.source ? ` · ${esc(q.source)}` : "";
+        const translation = q.text_ko
+          ? `<div class="quote__translation">translated (KO): ${esc(q.text_ko)}</div>`
+          : "";
         return `
-        <div class="quote quote--${esc(q.sentiment)}">“${esc(q.text)}”
+        <div class="quote quote--${esc(q.sentiment)}">"${esc(q.text)}"
           <span class="quote__meta">${esc(q.platform || "")} · grade ${esc(q.lead_grade)} · intent ${esc(q.intent)} · ${num(q.likes)} likes${src}${link}</span>
+          ${translation}
         </div>`;
       }).join("");
       return `<article class="card${s.lead_value === "low" ? " card--low" : ""}">
@@ -274,9 +279,12 @@
           ${row("Why", r.rationale)}
           ${row("Fix first", r.objection_to_address, true)}
         </div>
-        ${r.evidence_quote ? `<div class="rec__evidence">“${esc(r.evidence_quote)}”${
+        ${r.evidence_quote ? `<div class="rec__evidence">"${esc(r.evidence_quote)}"${
           r.evidence_permalink
             ? ` <a class="quote__link" href="${esc(r.evidence_permalink)}" target="_blank" rel="noopener noreferrer">open ↗</a>`
+            : ""}${
+          r.evidence_quote_ko
+            ? `<div class="quote__translation">translated (KO): ${esc(r.evidence_quote_ko)}</div>`
             : ""}</div>` : ""}
       </article>`;
     }).join("");
@@ -302,7 +310,8 @@
     renderStats(data); renderFunnel(data); renderGrades(data);
     renderTopics(data); renderSentiment(data); renderSegments(data);
     renderRecommendations(data); renderNotes(data); renderDownloads(tag);
-    el.results.hidden = false;
+    el.resultsPage1.hidden = false;
+    el.resultsPage2.hidden = false;
     el.emptyState.hidden = true;
   }
 
@@ -484,6 +493,24 @@
     el.runBtn.disabled = chosen.length === 0;
   }
 
+  function showPage(name) {
+    const isRun = name !== "details";
+    el.pageRun.hidden = !isRun;
+    el.pageDetails.hidden = isRun;
+    el.tabRun.classList.toggle("tab--active", isRun);
+    el.tabDetails.classList.toggle("tab--active", !isRun);
+    el.tabRun.setAttribute("aria-selected", String(isRun));
+    el.tabDetails.setAttribute("aria-selected", String(!isRun));
+    try { localStorage.setItem("sns-page", name); } catch { /* private mode */ }
+  }
+
+  function initTabs() {
+    el.tabRun.addEventListener("click", () => showPage("run"));
+    el.tabDetails.addEventListener("click", () => showPage("details"));
+    const saved = (() => { try { return localStorage.getItem("sns-page"); } catch { return null; } })();
+    if (saved) showPage(saved);
+  }
+
   function initTheme() {
     const saved = (() => { try { return localStorage.getItem("sns-theme"); } catch { return null; } })();
     if (saved) document.documentElement.setAttribute("data-theme", saved);
@@ -499,6 +526,7 @@
 
   async function init() {
     initTheme();
+    initTabs();
     el.runBtn.addEventListener("click", startRun);
     el.sources.addEventListener("change", syncSourceFields);
     el.maxQueries.addEventListener("input", syncSourceFields);
@@ -544,6 +572,12 @@
       option.disabled = true;
       option.textContent = `Claude-assisted — ${reason}`;
       el.analyzer.title = `Claude-assisted analysis ${reason}`;
+    }
+    if (!serverConfig.translation_available) {
+      const note = " Korean quote translation is off — run `pip install deep-translator`.";
+      const segNote = $("segTranslationNote"), recNote = $("recTranslationNote");
+      if (segNote) segNote.textContent = note;
+      if (recNote) recNote.textContent = note;
     }
 
     syncSourceFields();

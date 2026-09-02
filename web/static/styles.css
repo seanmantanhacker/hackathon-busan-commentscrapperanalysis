@@ -160,6 +160,35 @@ p { margin: 0; }
 .badge--warn   { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
 .badge--muted  { color: var(--text-muted); }
 
+/* -------------------------------------------------------------------- tabs */
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 12px 20px 0;
+}
+.tab {
+  font: inherit;
+  font-size: 13px;
+  font-weight: 620;
+  padding: 9px 16px;
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 8px 8px 0 0;
+  cursor: pointer;
+}
+.tab:hover { color: var(--text-primary); }
+.tab:focus-visible { outline: 2px solid var(--mag); outline-offset: 1px; }
+.tab--active {
+  color: var(--text-primary);
+  background: var(--surface-1);
+  border-color: var(--border);
+}
+
 /* ---------------------------------------------------------------- layout */
 
 .layout {
@@ -429,6 +458,12 @@ input[type="number"]:focus-visible, select:focus-visible, .btn:focus-visible {
 .quote--positive { border-left-color: var(--pos); }
 .quote--negative { border-left-color: var(--neg); }
 .quote__meta { display: block; margin-top: 5px; font-size: 10.5px; color: var(--text-muted); }
+.quote__translation {
+  margin-top: 6px; padding-top: 6px;
+  border-top: 1px dashed var(--border);
+  font-size: 11.5px; font-style: italic;
+  color: var(--text-secondary);
+}
 
 /* ---------------------------------------------------- recommendations */
 

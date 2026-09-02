@@ -20,7 +20,15 @@
   </div>
 </header>
 
+<nav class="tabs" role="tablist" aria-label="Dashboard sections">
+  <button id="tabRun" class="tab tab--active" type="button" role="tab" aria-selected="true" aria-controls="page-run" data-page="run">Run &amp; Recommendations</button>
+  <button id="tabDetails" class="tab" type="button" role="tab" aria-selected="false" aria-controls="page-details" data-page="details">Details &amp; Roadmap</button>
+</nav>
+
 <main class="layout">
+
+<!-- ═══════════════════════ page 1 — run + overview + recs ═══════════════════════ -->
+<div id="page-run" class="page" role="tabpanel" aria-labelledby="tabRun">
 
   <!-- ─────────────────────────── control panel ─────────────────────────── -->
   <section class="panel" aria-labelledby="runHeading">
@@ -87,8 +95,8 @@
     <p id="runError" class="alert" hidden></p>
   </section>
 
-  <!-- ───────────────────────────── results ─────────────────────────────── -->
-  <div id="results" hidden>
+  <!-- ───────────────────────── overview + recommendations ───────────────────────── -->
+  <div id="resultsPage1" hidden>
 
     <!-- headline numbers -->
     <section class="panel" aria-labelledby="statsHeading">
@@ -107,6 +115,28 @@
         <dl id="glossary" class="glossary"></dl>
       </details>
     </section>
+
+    <!-- recommendations -->
+    <section class="panel" aria-labelledby="recHeading">
+      <h2 id="recHeading" class="panel__title">Marketing recommendations</h2>
+      <p class="muted small">Ranked by qualified leads, not raw segment size.<span id="recTranslationNote"></span></p>
+      <div id="recommendations" class="reclist"></div>
+    </section>
+  </div>
+
+  <section id="emptyState" class="panel panel--empty">
+    <p class="empty__icon">🍅</p>
+    <h2 class="panel__title">No analysis loaded yet</h2>
+    <p class="muted">Pick a data source above and press <strong>Run analysis</strong>.
+       The offline sample needs no API key and finishes in a second.</p>
+  </section>
+
+</div>
+
+<!-- ═══════════════════════ page 2 — details + roadmap ═══════════════════════ -->
+<div id="page-details" class="page" role="tabpanel" aria-labelledby="tabDetails" hidden>
+
+  <div id="resultsPage2" hidden>
 
     <!-- funnel + grades -->
     <div class="grid grid--2">
@@ -144,17 +174,10 @@
       <h2 id="segHeading" class="panel__title">Customer segments</h2>
       <p class="muted small">
         Seeded from Zorvex's stated targets (Q&amp;A A3) — this measures how much real
-        conversation sits behind each one.
+        conversation sits behind each one.<span id="segTranslationNote"></span>
       </p>
       <div id="segmentChart"></div>
       <div id="segmentCards" class="cards"></div>
-    </section>
-
-    <!-- recommendations -->
-    <section class="panel" aria-labelledby="recHeading">
-      <h2 id="recHeading" class="panel__title">Marketing recommendations</h2>
-      <p class="muted small">Ranked by qualified leads, not raw segment size.</p>
-      <div id="recommendations" class="reclist"></div>
     </section>
 
     <!-- notes -->
@@ -178,12 +201,7 @@
     <p id="roadmapBasis" class="muted small"></p>
   </section>
 
-  <section id="emptyState" class="panel panel--empty">
-    <p class="empty__icon">🍅</p>
-    <h2 class="panel__title">No analysis loaded yet</h2>
-    <p class="muted">Pick a data source above and press <strong>Run analysis</strong>.
-       The offline sample needs no API key and finishes in a second.</p>
-  </section>
+</div>
 
 </main>
 

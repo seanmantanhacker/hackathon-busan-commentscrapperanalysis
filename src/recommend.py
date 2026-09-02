@@ -92,6 +92,7 @@ class Recommendation:
     rationale: str
     objection_to_address: str | None = None
     evidence_quote: str | None = None
+    evidence_quote_ko: str | None = None
     evidence_permalink: str | None = None
     evidence_source: str | None = None
 
@@ -132,10 +133,11 @@ def build_recommendations(profiles: Sequence[Any]) -> List[Recommendation]:
                 f"Recurring negative sentiment around '{profile.top_objection}' — worth investigating.",
             )
 
-        evidence = evidence_link = evidence_source = None
+        evidence = evidence_ko = evidence_link = evidence_source = None
         if profile.sample_quotes:
             top_quote = profile.sample_quotes[0]
             evidence = top_quote["text"]
+            evidence_ko = top_quote.get("text_ko") or None
             evidence_link = top_quote.get("permalink") or None
             evidence_source = top_quote.get("source") or None
 
@@ -155,6 +157,7 @@ def build_recommendations(profiles: Sequence[Any]) -> List[Recommendation]:
                 rationale=play["why"],
                 objection_to_address=objection,
                 evidence_quote=evidence,
+                evidence_quote_ko=evidence_ko,
                 evidence_permalink=evidence_link,
                 evidence_source=evidence_source,
             )

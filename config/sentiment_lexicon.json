@@ -1,0 +1,42 @@
+{
+  "_meta": {
+    "description": "Lightweight multilingual sentiment lexicon (id / en / ko) for the rules-based baseline analyzer. Indonesian YouTube comments are informal, so slang and misspellings are included deliberately.",
+    "scale": "Each term carries a polarity weight. Comment score = sum(weights) / sqrt(matches), clamped to [-1, 1]."
+  },
+
+  "positive": {
+    "enak": 1.0, "enak banget": 1.5, "enakk": 1.0, "enaak": 1.0, "endul": 1.0, "endels": 1.0,
+    "mantap": 1.2, "mantul": 1.2, "manteb": 1.2, "maknyus": 1.2, "juara": 1.2,
+    "sehat": 0.8, "segar": 0.9, "seger": 0.9, "fresh": 0.9, "manis": 0.7, "legit": 0.9,
+    "suka": 1.0, "cinta": 1.0, "favorit": 1.1, "favourite": 1.1, "recommended": 1.3,
+    "rekomen": 1.2, "worth": 1.1, "worth it": 1.3, "murah": 0.7, "terjangkau": 0.8,
+    "bagus": 1.0, "keren": 1.0, "cakep": 0.9, "berkualitas": 1.0, "premium": 0.6,
+    "ketagihan": 1.4, "nagih": 1.4, "candu": 1.3, "puas": 1.1, "bangga": 0.8,
+    "cantik": 0.7, "lucu": 0.6, "murah meriah": 1.0, "gurih": 0.9, "lembut": 0.6,
+    "delicious": 1.2, "tasty": 1.1, "amazing": 1.2, "love": 1.1, "great": 1.0,
+    "good": 0.8, "best": 1.2, "perfect": 1.2, "healthy": 0.8, "excellent": 1.2,
+    "맛있": 1.2, "좋다": 1.0, "최고": 1.3, "훌륭": 1.1, "신선": 0.9
+  },
+
+  "negative": {
+    "mahal": -1.0, "kemahalan": -1.3, "overpriced": -1.3, "gak worth": -1.4, "ga worth": -1.4,
+    "tidak worth": -1.4, "boros": -0.8, "nguras kantong": -1.0,
+    "hambar": -1.1, "gak enak": -1.3, "ga enak": -1.3, "nggak enak": -1.3, "aneh": -0.8,
+    "asam": -0.5, "pahit": -0.8, "eneg": -1.0, "mual": -1.0, "amis": -1.0,
+    "busuk": -1.5, "layu": -1.2, "basi": -1.5, "jelek": -1.2, "buruk": -1.2,
+    "kecewa": -1.4, "zonk": -1.3, "nyesel": -1.4, "menyesal": -1.4, "rugi": -1.2,
+    "lama": -0.6, "telat": -0.8, "ribet": -0.9, "susah": -0.8, "sulit": -0.7,
+    "gak ada": -0.5, "ga ada": -0.5, "kosong": -0.7, "habis": -0.5,
+    "penipuan": -1.5, "tipu": -1.5, "bohong": -1.3, "hoax": -1.2,
+    "bad": -1.0, "worst": -1.4, "terrible": -1.4, "disappointing": -1.3, "expensive": -0.9,
+    "awful": -1.3, "waste": -1.2, "rotten": -1.5, "bland": -1.0,
+    "맛없": -1.2, "별로": -1.0, "비싸": -0.9, "실망": -1.3
+  },
+
+  "negators": ["tidak", "gak", "ga", "nggak", "engga", "enggak", "bukan", "kurang", "belum", "jangan", "not", "no", "never", "안", "못"],
+
+  "intensifiers": {
+    "banget": 1.5, "bgt": 1.5, "sangat": 1.4, "sekali": 1.3, "parah": 1.4,
+    "super": 1.4, "really": 1.3, "very": 1.3, "so": 1.2, "너무": 1.4, "진짜": 1.3
+  }
+}

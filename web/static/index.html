@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Zorvex SNS Listening — Dashboard</title>
+<link rel="stylesheet" href="/static/styles.css"/>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍅</text></svg>"/>
+</head>
+<body class="viz-root">
+
+<header class="masthead">
+  <div class="masthead__title">
+    <h1>Zorvex SNS Listening</h1>
+    <p>HANGOOD Stevia Tomato · social listening for the Indonesian market</p>
+  </div>
+  <div class="masthead__right">
+    <span id="keyBadge" class="badge badge--muted">checking…</span>
+    <button id="themeToggle" class="btn btn--ghost" type="button" title="Toggle light/dark">◐</button>
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- ─────────────────────────── control panel ─────────────────────────── -->
+  <section class="panel" aria-labelledby="runHeading">
+    <h2 id="runHeading" class="panel__title">Run analysis</h2>
+
+    <div class="controls">
+      <fieldset class="field field--wide">
+        <legend class="field__label">Data sources</legend>
+        <div class="sources" id="sources">
+          <label class="check"><input type="checkbox" value="fixtures" checked/> <span>Offline sample</span></label>
+          <label class="check"><input type="checkbox" value="youtube"/> <span>YouTube</span></label>
+          <label class="check"><input type="checkbox" value="reddit"/> <span>Reddit</span></label>
+          <label class="check"><input type="checkbox" value="threads"/> <span>Threads</span></label>
+        </div>
+      </fieldset>
+
+      <label class="field" data-live-only>
+        <span class="field__label">Search queries <em id="quotaHint"></em></span>
+        <input id="maxQueries" type="number" min="1" max="15" value="6"/>
+      </label>
+
+      <label class="field" data-live-only>
+        <span class="field__label">Videos / posts per query</span>
+        <input id="videosPerQuery" type="number" min="1" max="50" value="5"/>
+      </label>
+
+      <label class="field" data-live-only>
+        <span class="field__label">Comments per video</span>
+        <input id="commentsPerVideo" type="number" min="10" max="500" step="10" value="100"/>
+      </label>
+
+      <label class="field">
+        <span class="field__label">Relevance threshold</span>
+        <input id="threshold" type="number" min="0" max="10" step="0.5" value="1"/>
+      </label>
+
+      <label class="field">
+        <span class="field__label">Analyzer</span>
+        <select id="analyzer">
+          <option value="rules">Rules (deterministic)</option>
+          <option value="llm">Claude-assisted</option>
+        </select>
+      </label>
+    </div>
+
+    <div class="controls controls--inline">
+      <label class="check"><input id="wantPdf" type="checkbox"/> <span>Export PDF</span></label>
+      <label class="check"><input id="useCache" type="checkbox" checked/> <span>Use cached API responses</span></label>
+      <button id="runBtn" class="btn btn--primary" type="button">Run analysis</button>
+    </div>
+
+    <!-- progress -->
+    <div id="progressWrap" class="progress" hidden>
+      <div class="progress__head">
+        <span id="progressMsg" class="progress__msg">Starting…</span>
+        <span id="progressPct" class="progress__pct">0%</span>
+      </div>
+      <div class="progress__track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progressBarEl">
+        <div id="progressBar" class="progress__fill"></div>
+      </div>
+      <pre id="progressLog" class="progress__log" aria-live="polite"></pre>
+    </div>
+
+    <p id="runError" class="alert" hidden></p>
+  </section>
+
+  <!-- ───────────────────────────── results ─────────────────────────────── -->
+  <div id="results" hidden>
+
+    <!-- headline numbers -->
+    <section class="panel" aria-labelledby="statsHeading">
+      <div class="panel__header">
+        <h2 id="statsHeading" class="panel__title">Overview</h2>
+        <div class="panel__meta">
+          <select id="reportPicker" class="select--small" title="Load a previous run"></select>
+          <span id="downloads" class="downloads"></span>
+        </div>
+      </div>
+      <div id="statTiles" class="tiles"></div>
+      <p id="runMeta" class="muted small"></p>
+
+      <details class="explain">
+        <summary class="explain__summary">What do these numbers mean?</summary>
+        <dl id="glossary" class="glossary"></dl>
+      </details>
+    </section>
+
+    <!-- funnel + grades -->
+    <div class="grid grid--2">
+      <section class="panel" aria-labelledby="funnelHeading">
+        <h2 id="funnelHeading" class="panel__title">Collection funnel</h2>
+        <p class="muted small">How many fetched comments survived relevance filtering.</p>
+        <div id="funnel"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="gradeHeading">
+        <h2 id="gradeHeading" class="panel__title">Lead grades</h2>
+        <p class="muted small">Scored against Zorvex's own criteria (Q&amp;A A4).</p>
+        <div id="gradeChart"></div>
+        <table class="datatable" id="gradeTable"></table>
+      </section>
+    </div>
+
+    <!-- topics + sentiment -->
+    <div class="grid grid--2">
+      <section class="panel" aria-labelledby="topicHeading">
+        <h2 id="topicHeading" class="panel__title">What the conversation is about</h2>
+        <p class="muted small">Comments mentioning each topic.</p>
+        <div id="topicChart"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="sentHeading">
+        <h2 id="sentHeading" class="panel__title">Sentiment mix</h2>
+        <p class="muted small">Positive · neutral · negative share of relevant comments.</p>
+        <div id="sentimentChart"></div>
+      </section>
+    </div>
+
+    <!-- segments -->
+    <section class="panel" aria-labelledby="segHeading">
+      <h2 id="segHeading" class="panel__title">Customer segments</h2>
+      <p class="muted small">
+        Seeded from Zorvex's stated targets (Q&amp;A A3) — this measures how much real
+        conversation sits behind each one.
+      </p>
+      <div id="segmentChart"></div>
+      <div id="segmentCards" class="cards"></div>
+    </section>
+
+    <!-- recommendations -->
+    <section class="panel" aria-labelledby="recHeading">
+      <h2 id="recHeading" class="panel__title">Marketing recommendations</h2>
+      <p class="muted small">Ranked by qualified leads, not raw segment size.</p>
+      <div id="recommendations" class="reclist"></div>
+    </section>
+
+    <!-- notes -->
+    <section class="panel" aria-labelledby="notesHeading">
+      <h2 id="notesHeading" class="panel__title">Strategic notes</h2>
+      <ul id="notes" class="notes"></ul>
+    </section>
+  </div>
+
+  <!-- ─────────────────── source roadmap (always visible) ──────────────── -->
+  <section class="panel" aria-labelledby="roadmapHeading">
+    <h2 id="roadmapHeading" class="panel__title">Data sources — cost &amp; roadmap</h2>
+    <p class="muted small">
+      What each platform costs, what it takes to switch on, and what it can actually
+      return. Figures are from measured runs where noted.
+    </p>
+    <div class="tablewrap"><table class="datatable datatable--sources" id="sourceTable"></table></div>
+
+    <h3 class="subhead">Next builds</h3>
+    <div id="nextBuilds" class="builds"></div>
+    <p id="roadmapBasis" class="muted small"></p>
+  </section>
+
+  <section id="emptyState" class="panel panel--empty">
+    <p class="empty__icon">🍅</p>
+    <h2 class="panel__title">No analysis loaded yet</h2>
+    <p class="muted">Pick a data source above and press <strong>Run analysis</strong>.
+       The offline sample needs no API key and finishes in a second.</p>
+  </section>
+
+</main>
+
+<footer class="foot">
+  Zorvex SNS Listening · Team SISKAMLING · I'M IN BUSAN Impact Hackathon 2026
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+{
+  "_meta": {
+    "description": "Source roadmap shown on the dashboard: what each platform costs, what it takes to turn on, and what it actually returns. Cost figures are grounded in measured runs where possible - see 'basis' on each entry.",
+    "measured_baseline": "One live YouTube run on 2026-08-28: 6 queries -> 27 videos -> 2,210 comments -> 127 relevant, for 627 of 10,000 daily quota units.",
+    "last_reviewed": "2026-09-01"
+  },
+
+  "sources": [
+    {
+      "id": "youtube",
+      "name": "YouTube",
+      "status": "active",
+      "cost": "Free",
+      "cost_detail": "10,000 quota units/day. A search costs 100, a page of 100 comments costs 1.",
+      "cost_per_run": "$0",
+      "basis": "Measured: 2,210 comments for 627 units — roughly 35,000 comments/day within the free quota.",
+      "setup": "Paste an API key (~5 min)",
+      "reads": "Public comments + replies on ANY video",
+      "indonesia_value": "high",
+      "verdict": "The workhorse. Only free source that reads other people's comments at category scale, and Indonesian food content on it is plentiful."
+    },
+    {
+      "id": "reddit",
+      "name": "Reddit",
+      "status": "ready",
+      "cost": "Free",
+      "cost_detail": "OAuth 'script' app is free forever. 100 queries/minute, no daily cap.",
+      "cost_per_run": "$0",
+      "basis": "Estimated: 6 queries + ~60 posts ≈ 66 requests ≈ 40 seconds of a 100/min budget. Client self-throttles to ~92/min.",
+      "setup": "Create a free script app (~2 min)",
+      "reads": "Full nested comment trees on ANY public post",
+      "indonesia_value": "low",
+      "verdict": "Code is written and tested. Free, but Indonesian food discussion on Reddit is thin — expect English, global, category-level signal rather than local market evidence."
+    },
+    {
+      "id": "threads",
+      "name": "Threads",
+      "status": "limited",
+      "cost": "Free API",
+      "cost_detail": "No usage fee, but the 'threads_keyword_search' permission requires Meta app review.",
+      "cost_per_run": "$0 + review time",
+      "basis": "Not measured — this module is unverified against the live API.",
+      "setup": "Meta app + OAuth + app review (hours to weeks)",
+      "reads": "Top-level posts matching a keyword. CANNOT read replies to other people's posts.",
+      "indonesia_value": "low-medium",
+      "verdict": "Structurally weak for this tool: it returns posts mentioning your keywords, not conversation about them. The reply data we actually want is unreachable for accounts you don't own."
+    },
+    {
+      "id": "twitter",
+      "name": "X / Twitter",
+      "status": "paid",
+      "cost": "~$11 per run",
+      "cost_detail": "$0.005 per post read. No free tier since Feb 2026; credits must be bought up front.",
+      "cost_per_run": "$11",
+      "basis": "Calculated: 2,210 posts (matching our measured YouTube haul) × $0.005 = $11.05. Weekly runs ≈ $44/month.",
+      "setup": "Developer account + prepaid credits",
+      "reads": "Public posts and replies",
+      "indonesia_value": "low",
+      "verdict": "Not recommended. Real money for thinner data — X skews news/politics in Indonesia, not groceries. Not built."
+    },
+    {
+      "id": "instagram_tiktok",
+      "name": "Instagram / TikTok",
+      "status": "blocked",
+      "cost": "Free",
+      "cost_detail": "APIs are free but read only accounts you own.",
+      "cost_per_run": "n/a",
+      "basis": "API contract — no measurement possible.",
+      "setup": "Graph API on Zorvex's own account",
+      "reads": "Only Zorvex's OWN posts and their replies",
+      "indonesia_value": "high (own channel only)",
+      "verdict": "Where the audience actually is, and unreachable for competitors without scraping. Worth wiring up for Zorvex's OWN account once they post — a separate, easy integration."
+    },
+    {
+      "id": "tokopedia_shopee",
+      "name": "Tokopedia / Shopee",
+      "status": "unavailable",
+      "cost": "—",
+      "cost_detail": "No public review API exists.",
+      "cost_per_run": "n/a",
+      "basis": "No API published.",
+      "setup": "None possible",
+      "reads": "Nothing programmatically",
+      "indonesia_value": "high (if it existed)",
+      "verdict": "The uncomfortable gap: this is where Zorvex's actual buyers will review the product. Only route is scraping, which we won't ship."
+    }
+  ],
+
+  "next_builds": [
+    {
+      "title": "YouTube video + channel enrichment",
+      "cost": "Free — ~2 extra quota units per run",
+      "effort": "Small",
+      "value": "high",
+      "detail": "videos.list and channels.list return view counts, tags, and creator subscriber counts (1 unit per 50 items). Lets leads be weighted by actual reach instead of counted equally, and produces a ranked creator table — the influencer-scoring data Option A originally wanted."
+    },
+    {
+      "title": "Reddit activation",
+      "cost": "Free",
+      "effort": "2 min setup, code already done",
+      "value": "medium",
+      "detail": "Add REDDIT_CLIENT_ID and REDDIT_CLIENT_SECRET to .env, run check_reddit.py, then --source youtube reddit. Broadens category evidence; will not add Indonesian depth."
+    },
+    {
+      "title": "Instagram Graph API on Zorvex's own account",
+      "cost": "Free",
+      "effort": "Medium",
+      "value": "high",
+      "detail": "Once Zorvex's Instagram has comment volume, their own-channel replies are readable through the official API with no scraping. Directly measures their own audience rather than the category."
+    },
+    {
+      "title": "Claude-assisted analyzer",
+      "cost": "~$0.50 per 1,000 comments",
+      "effort": "Already built",
+      "value": "medium",
+      "detail": "pip install anthropic + an API key. Catches sarcasm and emoji-carried sentiment the lexicon misses — e.g. a comment scored neutral despite 🤦😒 markers. Run it once on the final dataset to check how far off the rules baseline was."
+    }
+  ]
+}

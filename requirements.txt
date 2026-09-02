@@ -1,0 +1,5 @@
+# Baseline needs exactly one dependency.
+requests>=2.28.0
+
+# Optional — only for `--analyzer llm` (Claude-assisted analysis).
+# anthropic>=0.40.0

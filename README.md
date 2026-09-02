@@ -17,7 +17,7 @@ the caveats before relying on it).
 cd hackathon-busan-commentscrapperanalysis
 pip install -r requirements.txt     # one dependency: requests
 
-python serve.py                     # dashboard at http://localhost:3333
+python serve.py                     # dashboard at http://localhost:3998
 ```
 
 That opens the web dashboard, where you can start a run, watch it progress, and
@@ -42,7 +42,7 @@ python tests/test_pipeline.py       # 98 checks, no pytest needed
 ## Dashboard
 
 ```bash
-python serve.py                 # http://localhost:3333, opens a browser tab
+python serve.py                 # http://localhost:3998, opens a browser tab
 python serve.py --lan           # also reachable from other devices (see below)
 python serve.py --port 8080     # different port
 python serve.py --no-browser    # don't auto-open
@@ -87,9 +87,9 @@ python serve.py --lan
 That binds `0.0.0.0` (all interfaces) and prints the exact URLs to hand out:
 
 ```
-  Bound to     : 0.0.0.0:3333
-  This machine : http://localhost:3333
-  On your LAN  : http://192.168.45.13:3333
+  Bound to     : 0.0.0.0:3998
+  This machine : http://localhost:3998
+  On your LAN  : http://192.168.45.13:3998
 ```
 
 **There is no login.** Anyone who can reach that URL can start runs — spending your
@@ -101,7 +101,7 @@ If a device still can't connect, work down this list:
 
 | Check | How |
 |---|---|
-| **Bound to the LAN?** | The banner must say `0.0.0.0`, not `127.0.0.1`. `netstat -ano \| findstr :3333` should show `0.0.0.0:3333 LISTENING`. |
+| **Bound to the LAN?** | The banner must say `0.0.0.0`, not `127.0.0.1`. `netstat -ano \| findstr :3998` should show `0.0.0.0:3998 LISTENING`. |
 | **Same network?** | Both devices on the same Wi-Fi, with IPs in the same subnet (e.g. both `192.168.45.x`). Phone hotspots and guest SSIDs are usually separate networks. |
 | **Router client isolation** | Guest networks and many hotel/café APs block device-to-device traffic entirely. Nothing on your machine can fix this — use a different network or a phone hotspot. |
 | **Windows Firewall** | Inbound Python must be allowed **for the active profile**. Check the profile with `Get-NetConnectionProfile`, then confirm a matching rule exists — a Public-profile rule does nothing on a Private network and vice versa. |
@@ -111,7 +111,7 @@ To add a firewall rule explicitly (run as Administrator, once):
 
 ```powershell
 New-NetFirewallRule -DisplayName "SNS Listening dashboard" -Direction Inbound `
-  -Protocol TCP -LocalPort 3333 -Action Allow -Profile Any
+  -Protocol TCP -LocalPort 3998 -Action Allow -Profile Any
 ```
 
 ---
@@ -361,7 +361,7 @@ in the CSV, add the recurring terms, and re-run.
 ```
 hackathon-busan-commentscrapperanalysis/
 ├── run.py                       CLI entry point
-├── serve.py                     dashboard entry point (localhost:3333)
+├── serve.py                     dashboard entry point (localhost:3998)
 ├── to_pdf.py                    convert an existing report to PDF
 ├── requirements.txt
 ├── .env.example                 copy to .env, add your key

@@ -14,7 +14,7 @@ module.exports = {
       script: "serve.py",
       interpreter: "/var/www/hackathon-busan-commentscrapperanalysis/venv/bin/python3",
       cwd: "/var/www/hackathon-busan-commentscrapperanalysis",
-      args: "--no-browser --port 3333",
+      args: "--no-browser --port 3998",
       env: {
         PYTHONUNBUFFERED: "1",
       },

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Start the dashboard.
 
-    python serve.py                  # http://localhost:3333 (this machine only)
+    python serve.py                  # http://localhost:3998 (this machine only)
     python serve.py --lan            # also reachable from other devices on the network
     python serve.py --port 8080
     python serve.py --no-browser

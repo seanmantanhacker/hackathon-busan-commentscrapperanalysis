@@ -1,6 +1,6 @@
 """Dashboard HTTP server — stdlib only, no Flask/Express needed.
 
-Serves a single-page dashboard on http://localhost:3333 that can start a
+Serves a single-page dashboard on http://localhost:3998 that can start a
 pipeline run, stream its progress, and render the results.
 
 Routes
@@ -45,7 +45,7 @@ from src.config import (  # noqa: E402
 from src.pipeline import Pipeline, PipelineConfig  # noqa: E402
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
-DEFAULT_PORT = 3333
+DEFAULT_PORT = 3998
 
 # Only these extensions may be downloaded from the output directory.
 DOWNLOADABLE = {".md", ".json", ".csv", ".pdf", ".html"}
